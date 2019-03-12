@@ -1,9 +1,20 @@
 FROM ruby:2.3.1
 
+MAINTAINER Géraud Willing <geraudwilling@hotmail.fr>
+
+WORKDIR /smashing
+
+RUN addgroup smashing \
+    && adduser -S -G smashing smashing \
+    && chown -R smashing:smashing /smashing
+
 RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
 RUN apt-get update && \
     apt-get -y install nodejs && \
     apt-get -y clean
+
+USER dashing
+
 RUN gem install bundler smashing
 RUN mkdir /smashing
 ADD . /smashing
@@ -23,7 +34,7 @@ COPY run.sh /
 
 VOLUME ["/dashboards", "/jobs", "/lib-smashing", "/config", "/public", "/widgets", "/assets"]
 
-ENV PORT 3030
+ENV PORT 8080
 EXPOSE $PORT
 WORKDIR /smashing
 
