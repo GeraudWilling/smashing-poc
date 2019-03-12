@@ -1,12 +1,11 @@
-FROM ruby:2.6.1
+FROM ruby:2.3.1
 
 MAINTAINER Géraud Willing <geraudwilling@hotmail.fr>
 
 WORKDIR /smashing
 
 RUN addgroup smashing \
-    && adduser smashing \
-    && adduser smashing smashing  \
+    && adduser --system -G smashing smashing \
     && chown -R smashing:smashing /smashing
 
 RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
