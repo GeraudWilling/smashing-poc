@@ -12,7 +12,7 @@ RUN apt-get update && \
     apt-get -y install nodejs && \
     apt-get -y clean
 
-USER dashing
+USER smashing
 
 RUN gem install bundler smashing
 RUN mkdir /smashing
