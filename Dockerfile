@@ -5,6 +5,7 @@ MAINTAINER Géraud Willing <geraudwilling@hotmail.fr>
 WORKDIR /smashing
 
 RUN addgroup smashing \
+    && adduser smashing \
     && adduser smashing smashing  \
     && chown -R smashing:smashing /smashing
 
