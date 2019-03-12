@@ -2,8 +2,8 @@ FROM ruby:2.3.1
 
 MAINTAINER Géraud Willing <geraudwilling@hotmail.fr>
 
-WORKDIR /smashing
 
+# Add user and group smashing
 RUN groupadd -r smashing && useradd --no-log-init -r -g smashing smashing \
     && chown -R smashing:smashing /smashing
 
@@ -12,11 +12,20 @@ RUN apt-get update && \
     apt-get -y install nodejs && \
     apt-get -y clean
 
+# Install git 
+RUN apt-get install -y git
+
+#Change user from root to smashing
 USER smashing
 
+#Install bundler and smashing
 RUN gem install bundler smashing
 RUN mkdir /smashing
-ADD . /smashing
+WORKDIR /smashing
+
+# Clone the src code
+RUN git clone https://github.com/GeraudWilling/smashing-poc.git
+
 RUN bundle && \
     ln -s /smashing/dashboards /dashboards && \
     ln -s /smashing/jobs /jobs && \
@@ -37,4 +46,4 @@ ENV PORT 8080
 EXPOSE $PORT
 WORKDIR /smashing
 
-ENTRYPOINT ["/run.sh"]
+ENTRYPOINT ["smashing start-p $PORT"]
