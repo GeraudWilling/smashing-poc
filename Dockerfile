@@ -4,8 +4,7 @@ MAINTAINER Géraud Willing <geraudwilling@hotmail.fr>
 
 WORKDIR /smashing
 
-RUN addgroup smashing \
-    && adduser --system --gid smashing smashing \
+RUN groupadd -r smashing && useradd --no-log-init -r -g smashing smashing \
     && chown -R smashing:smashing /smashing
 
 RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
