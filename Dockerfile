@@ -38,4 +38,4 @@ ENV PORT 8080
 EXPOSE $PORT
 WORKDIR /smashing
 
-CMD ["/run.sh"]
+ENTRYPOINT ["/run.sh"]
