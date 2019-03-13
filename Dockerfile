@@ -27,6 +27,8 @@ ENV HOME=/smashing
 #Install bundler and smashing
 RUN gem install bundler smashing
 
+RUN echo "$PWD"
+RUN ls
 # Install gems dependencies
 RUN bundle install --path /smashing
 
