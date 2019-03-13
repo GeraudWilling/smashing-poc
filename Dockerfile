@@ -26,21 +26,14 @@ RUN gem install bundler smashing
 # Clone the src code
 RUN git clone https://github.com/GeraudWilling/smashing-poc.git
 
-RUN bundle && \
-    ln -s /smashing/dashboards /dashboards && \
-    ln -s /smashing/jobs /jobs && \
-    ln -s /smashing/assets /assets && \
-    ln -s /smashing/lib /lib-smashing && \
-    ln -s /smashing/public /public && \
-    ln -s /smashing/widgets /widgets && \
-    mkdir /smashing/config && \
-    mv /smashing/config.ru /smashing/config/config.ru && \
-    ln -s /smashing/config/config.ru /smashing/config.ru && \
-    ln -s /smashing/config /config
+# Install gems dependencies
+RUN bundle 
 
+#copy the run script
 COPY run.sh /smashing
 
-VOLUME ["/dashboards", "/jobs", "/lib-smashing", "/config", "/public", "/widgets", "/assets"]
+# Declare volumes to persist files
+VOLUME ["/smashing/dashboards", "/smashing/jobs", "/smashing/widgets", "/smashing/assets"]
 
 ENV PORT 8080
 EXPOSE $PORT
