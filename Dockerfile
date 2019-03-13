@@ -22,12 +22,13 @@ USER smashing
 
 # change dir before running bundle
 WORKDIR /smashing
+ENV HOME=/smashing 
 
 #Install bundler and smashing
 RUN gem install bundler smashing
 
 # Install gems dependencies
-RUN bundle 
+RUN bundle install --path /smashing
 
 # Declare volumes to persist files
 VOLUME ["/smashing/dashboards", "/smashing/jobs", "/smashing/widgets", "/smashing/assets"]
