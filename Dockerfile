@@ -1,14 +1,6 @@
 FROM ruby:2.3.1
 
-MAINTAINER Géraud Willing <geraudwilling@hotmail.fr>
-
-# Create target dir
-RUN mkdir /smashing
-WORKDIR /smashing
-
-# Add user and group smashing
-RUN groupadd -r smashing && useradd --no-log-init -r -g smashing smashing \
-    && chown -R smashing:smashing /smashing
+LABEL maintainer="Géraud Willing <contact@geraudwilling.com>"
 
 # Install git & nodejs
 RUN apt-get update && \
@@ -17,20 +9,25 @@ RUN apt-get update && \
     apt-get -y clean  && \
     apt-get install -y git
 
+
+# Clone the src code to /
+RUN git clone https://github.com/GeraudWilling/smashing-poc.git smashing
+
+# Add user and group smashing
+RUN groupadd -r smashing && useradd --no-log-init -r -g smashing smashing \
+    && chown -R smashing:smashing /smashing
+
 #Change user from root to smashing
 USER smashing
+
+# change dir before running bundle
+WORKDIR /smashing
 
 #Install bundler and smashing
 RUN gem install bundler smashing
 
-# Clone the src code
-RUN git clone https://github.com/GeraudWilling/smashing-poc.git
-
 # Install gems dependencies
 RUN bundle 
-
-#copy the run script
-COPY run.sh /smashing
 
 # Declare volumes to persist files
 VOLUME ["/smashing/dashboards", "/smashing/jobs", "/smashing/widgets", "/smashing/assets"]
