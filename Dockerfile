@@ -11,11 +11,11 @@ RUN groupadd -r smashing && useradd --no-log-init -r -g smashing smashing \
     && chown -R smashing:smashing /smashing
 
 # Install git & nodejs
-RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
 RUN apt-get update && \
+    apt-get install -y --no-install-recommends apt-utils && \
     apt-get -y install nodejs && \
-    apt-get -y clean 
-RUN apt-get install -y git
+    apt-get -y clean  && \
+    apt-get install -y git
 
 #Change user from root to smashing
 USER smashing
