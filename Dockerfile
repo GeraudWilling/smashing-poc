@@ -2,17 +2,19 @@ FROM ruby:2.3.1
 
 MAINTAINER Géraud Willing <geraudwilling@hotmail.fr>
 
+# Create target dir
+RUN mkdir /smashing
+WORKDIR /smashing
 
 # Add user and group smashing
 RUN groupadd -r smashing && useradd --no-log-init -r -g smashing smashing \
     && chown -R smashing:smashing /smashing
 
+# Install git & nodejs
 RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
 RUN apt-get update && \
     apt-get -y install nodejs && \
-    apt-get -y clean
-
-# Install git 
+    apt-get -y clean 
 RUN apt-get install -y git
 
 #Change user from root to smashing
@@ -20,8 +22,6 @@ USER smashing
 
 #Install bundler and smashing
 RUN gem install bundler smashing
-RUN mkdir /smashing
-WORKDIR /smashing
 
 # Clone the src code
 RUN git clone https://github.com/GeraudWilling/smashing-poc.git
@@ -38,12 +38,11 @@ RUN bundle && \
     ln -s /smashing/config/config.ru /smashing/config.ru && \
     ln -s /smashing/config /config
 
-COPY run.sh /
+COPY run.sh /smashing
 
 VOLUME ["/dashboards", "/jobs", "/lib-smashing", "/config", "/public", "/widgets", "/assets"]
 
 ENV PORT 8080
 EXPOSE $PORT
-WORKDIR /smashing
 
-ENTRYPOINT ["smashing start-p $PORT"]
+ENTRYPOINT ["/smashing/run.sh"]
