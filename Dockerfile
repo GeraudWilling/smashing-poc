@@ -11,7 +11,7 @@ RUN apt-get update && \
 
 
 # Clone the src code to /
-RUN git clone https://github.com/GeraudWilling/smashing-poc.git smashing
+RUN git clone -b develop https://github.com/GeraudWilling/smashing-poc.git smashing
 
 # Add user and group smashing
 RUN groupadd -r smashing && useradd --no-log-init -r -g smashing smashing \
