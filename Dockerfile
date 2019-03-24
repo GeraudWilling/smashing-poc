@@ -1,4 +1,4 @@
-FROM ruby:2.3.1
+FROM ruby:2.6.0
 
 LABEL maintainer="Géraud Willing <contact@geraudwilling.com>"
 
@@ -31,6 +31,9 @@ RUN echo "$PWD"
 RUN ls
 # Install gems dependencies
 RUN bundle install --path /smashing
+
+# Add executable rigths
+RUN chmod u+x /smashing/run.sh
 
 # Declare volumes to persist files
 #VOLUME ["/smashing/dashboards", "/smashing/jobs", "/smashing/widgets", "/smashing/assets"]
