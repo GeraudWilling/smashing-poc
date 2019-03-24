@@ -41,4 +41,9 @@ RUN chmod u+x /smashing/run.sh
 ENV PORT 8080
 EXPOSE $PORT
 
-ENTRYPOINT ["/smashing/run.sh"]
+CMD bundle exec rackup -s puma -p $PORT
+
+
+
+
+#ENTRYPOINT ["/smashing/run.sh"]
