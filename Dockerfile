@@ -33,7 +33,7 @@ RUN ls
 RUN bundle install --path /smashing
 
 # Declare volumes to persist files
-VOLUME ["/smashing/dashboards", "/smashing/jobs", "/smashing/widgets", "/smashing/assets"]
+#VOLUME ["/smashing/dashboards", "/smashing/jobs", "/smashing/widgets", "/smashing/assets"]
 
 ENV PORT 8080
 EXPOSE $PORT
