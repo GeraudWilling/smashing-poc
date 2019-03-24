@@ -41,7 +41,7 @@ RUN chmod u+x /smashing/run.sh
 ENV PORT 8080
 EXPOSE $PORT
 
-CMD bundle exec rackup -s puma -p $PORT
+CMD bundle exec rails s -b 0.O.O.O -p $PORT
 
 
 
