@@ -11,7 +11,8 @@ RUN apt-get update && \
 
 
 # Clone the src code to /
-RUN git clone -b develop https://github.com/GeraudWilling/smashing-poc.git smashing
+#RUN git clone -b develop https://github.com/GeraudWilling/smashing-poc.git smashing
+ADD . /smashing
 
 # Add user and group smashing
 RUN groupadd -r smashing && useradd --no-log-init -r -g smashing smashing \
@@ -42,7 +43,9 @@ ENV PORT 8080
 EXPOSE $PORT
 
 #Launch bundle cmd
-CMD bundle exec rackup -s puma -p $PORT
+#CMD bundle exec rackup -s puma -b 0.0.0.0 -p $PORT
+CMD rails s -b 0.0.0.0
+
 #CMD bundle exec ruby myapp.rb
 
 
