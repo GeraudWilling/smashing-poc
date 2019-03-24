@@ -24,6 +24,10 @@ USER smashing
 WORKDIR /smashing
 ENV HOME=/smashing 
 
+#Add execute/write rigths
+RUN chmod u+x /smashing
+RUN chmod u+w /smashing
+
 #Install bundler and smashing
 RUN gem install bundler smashing
 
@@ -37,7 +41,9 @@ RUN bundle install --path /smashing
 ENV PORT 8080
 EXPOSE $PORT
 
-CMD bundle exec rails s -b 0.O.O.O -p $PORT
+#Launch bundle cmd
+CMD bundle exec rackup -s puma -p $PORT
+#CMD bundle exec ruby myapp.rb
 
 
 
