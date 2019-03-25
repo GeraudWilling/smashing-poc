@@ -44,7 +44,7 @@ EXPOSE $PORT
 
 #Launch bundle cmd
 #CMD bundle exec rackup -s puma -b 0.0.0.0 -p $PORT
-CMD rails s -b 0.0.0.0
+CMD smshing start
 
 #CMD bundle exec ruby myapp.rb
 

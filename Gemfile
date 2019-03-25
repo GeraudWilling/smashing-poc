@@ -1,13 +1,6 @@
 source 'https://rubygems.org'
-#ruby "2.6.0"
-gem 'rails'
-gem 'sqlite3'
-gem 'sass-rails'
-gem 'uglifier'
-gem 'coffee-rails'
-gem 'jquery-rails'
+ruby "2.6.0"
 
-gem 'puma'
 gem 'smashing'
 
 ## Remove this if you don't need a twitter widget.
