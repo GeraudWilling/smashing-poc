@@ -1,49 +1,54 @@
-FROM ruby:2.3.1
+FROM ruby:2.6.0
 
-MAINTAINER Géraud Willing <geraudwilling@hotmail.fr>
+LABEL maintainer="Géraud Willing <contact@geraudwilling.com>"
 
+# Install git & nodejs
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends apt-utils && \
+    apt-get -y install nodejs && \
+    apt-get -y clean  && \
+    apt-get install -y git
+
+
+# Clone the src code to /
+RUN git clone -b develop https://github.com/GeraudWilling/smashing-poc.git smashing
+#ADD . /smashing
 
 # Add user and group smashing
 RUN groupadd -r smashing && useradd --no-log-init -r -g smashing smashing \
     && chown -R smashing:smashing /smashing
 
-RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
-RUN apt-get update && \
-    apt-get -y install nodejs && \
-    apt-get -y clean
-
-# Install git 
-RUN apt-get install -y git
-
 #Change user from root to smashing
 USER smashing
 
+# change dir before running bundle
+WORKDIR /smashing
+ENV HOME=/smashing 
+
+#Add execute/write rigths
+RUN chmod u+x /smashing
+RUN chmod u+w /smashing
+
 #Install bundler and smashing
 RUN gem install bundler smashing
-RUN mkdir /smashing
-WORKDIR /smashing
 
-# Clone the src code
-RUN git clone https://github.com/GeraudWilling/smashing-poc.git
+RUN ls
+# Install gems dependencies
+RUN bundle install --path /smashing
 
-RUN bundle && \
-    ln -s /smashing/dashboards /dashboards && \
-    ln -s /smashing/jobs /jobs && \
-    ln -s /smashing/assets /assets && \
-    ln -s /smashing/lib /lib-smashing && \
-    ln -s /smashing/public /public && \
-    ln -s /smashing/widgets /widgets && \
-    mkdir /smashing/config && \
-    mv /smashing/config.ru /smashing/config/config.ru && \
-    ln -s /smashing/config/config.ru /smashing/config.ru && \
-    ln -s /smashing/config /config
-
-COPY run.sh /
-
-VOLUME ["/dashboards", "/jobs", "/lib-smashing", "/config", "/public", "/widgets", "/assets"]
+# Declare volumes to persist files
+#VOLUME ["/smashing/dashboards", "/smashing/jobs", "/smashing/widgets", "/smashing/assets"]
 
 ENV PORT 8080
 EXPOSE $PORT
-WORKDIR /smashing
 
-ENTRYPOINT ["smashing start-p $PORT"]
+#Launch bundle cmd
+#CMD bundle exec rackup -s puma -b 0.0.0.0 -p $PORT
+#CMD smashing start
+#CMD bundle exec ruby myapp.rb
+CMD bundle exec puma -p $PORT
+
+
+
+
+#ENTRYPOINT ["/smashing/run.sh"]

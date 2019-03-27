@@ -7,6 +7,9 @@ configure do
   # how to add additional template languages.
   set :template_languages, %i[html erb]
 
+  # Adding host 0.0.0.0 for openshift
+  #set :bind, '0.0.0.0'
+
   helpers do
     def protected!
       # Put any authentication code you want in here.
