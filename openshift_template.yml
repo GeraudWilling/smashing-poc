@@ -1,23 +1,25 @@
 apiVersion: v1
 kind: Template
 labels:
-  template: application-template-sample-pipeline
-message: |-
+  template: application # The label applicated to all template objects
+message: |- #Message displayed after a successfully processing of the template
   A Jenkins server will be automatically instantiated in this project to manage
   the Pipeline BuildConfig created by this template.  You will be able to log in to
   it using your OpenShift user credentials.
+
+
+# The metadata of the templates.
 metadata:
   annotations:
-    description: |-
-      This example showcases the new Jenkins Pipeline integration in OpenShift,
-      which performs continuous integration and deployment right on the platform.
-      The template contains a Jenkinsfile - a definition of a multi-stage CI/CD process - that
-      leverages the underlying OpenShift platform for dynamic and scalable
-      builds. OpenShift integrates the status of your pipeline builds into the web
-      console allowing you to see your entire application lifecycle in a single view.
+    description: |- 
+      The template contains a Jenkinsfile - a definition of a multi-stage CI/CD process - 
+      that leverages the underlying OpenShift platform for dynamic and scalable builds.
     iconClass: icon-jenkins
-    tags: instant-app,jenkins
-  name: jenkins-pipeline-example
+    tags: instant-app,jenkins,ruby
+  name: smashing-template #The name of the template
+
+
+# The list of parameters of the pipeline.
 parameters:
 - description: The name assigned to all of the objects defined in this template.
   displayName: Name
@@ -36,21 +38,24 @@ parameters:
 - description: Set this to a branch name, tag or other ref of your repository if you
     are not using the default branch.
   displayName: Git Reference
+  value: develop
   name: SOURCE_REPOSITORY_REF
 - description: Set this to the relative path to your project if it is not in the root
     of your repository.
   displayName: Context Directory
   name: CONTEXT_DIR
-  
+
+# The list of openshift objects to create within the templates (BuildConfig, Deployment, Service, Route)
 objects:
 - apiVersion: v1
   kind: BuildConfig
   metadata:
-    annotations:
-      pipeline.alpha.openshift.io/uses: '[{"name": "${NAME}", "namespace": "", "kind": "DeploymentConfig"}]'
+    #annotations:
+    #  pipeline.alpha.openshift.io/uses: '[{"name": "${NAME}", "namespace": "", "kind": "DeploymentConfig"}]'
     labels:
-      name: sample-pipeline
-    name: sample-pipeline
+      name: smashing-pipeline
+      front-end: smashing-pipeline
+    name: smashing-pipeline
   spec:
     source:
       git:

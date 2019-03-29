@@ -22,11 +22,11 @@ try{
 
         // trigger Build on OpenShift
         stage('buildOnOpenShift'){
-             openshiftBuild(buildConfig: 'sample-pipeline', showBuildLogs: 'true')
+             openshiftBuild(buildConfig: '${NAME}', showBuildLogs: 'true')
         }
 
         stage('deploy') {
-            openshiftDeploy(deploymentConfig: 'sample-pipeline')
+            openshiftDeploy(deploymentConfig: '${NAME}')
         }
     }
 } catch (Exception e) {
