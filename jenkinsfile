@@ -1,0 +1,9 @@
+node('nodejs') {
+    stage 'build'
+        openshiftBuild(buildConfig: 'smashingtest2', showBuildLogs: 'true')
+    stage 'deploy'
+        openshiftDeploy(deploymentConfig: 'frontend')
+    stage 'check npm version'
+        sh 'npm --version'
+}
+
