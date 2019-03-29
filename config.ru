@@ -8,7 +8,7 @@ configure do
   set :template_languages, %i[html erb]
 
   # Adding host 0.0.0.0 for openshift
-  set :bind, '0.0.0.0'
+  #set :bind, '0.0.0.0'
 
   helpers do
     def protected!
