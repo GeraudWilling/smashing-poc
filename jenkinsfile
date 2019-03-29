@@ -17,16 +17,16 @@ try{
         }
         // run test in Jenkins Slave
         stage('buildAndTest'){
-             sh "npm build"
+             //sh "npm build"
         }
 
         // trigger Build on OpenShift
         stage('buildOnOpenShift'){
-             openshiftBuild(buildConfig: '${NAME}', showBuildLogs: 'true')
+             openshiftBuild(buildConfig: 'sample-pipeline', showBuildLogs: 'true')
         }
 
         stage('deploy') {
-            openshiftDeploy(deploymentConfig: '${NAME}')
+            openshiftDeploy(deploymentConfig: 'sample-pipeline')
         }
     }
 } catch (Exception e) {
