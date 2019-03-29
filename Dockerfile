@@ -1,4 +1,4 @@
-FROM ruby:2.6.0
+FROM ruby:2.5.0
 
 LABEL maintainer="Géraud Willing <contact@geraudwilling.com>"
 
@@ -32,7 +32,6 @@ RUN chmod u+w /smashing
 #Install bundler and smashing
 RUN gem install bundler smashing
 
-RUN ls
 # Install gems dependencies
 RUN bundle install --path /smashing
 
