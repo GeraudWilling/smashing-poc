@@ -30,7 +30,10 @@ pipeline {
       steps {
         script {
           openshift.withCluster() {
-            openshift.selector("bc", "${NAME}").startBuild("--wait")
+            openshift.verbose(true) // Turn it back
+            // If you want verbose output, but want a specific log-level
+            openshift.logLevel(3)
+            openshift.selector("bc", "${NAME}").startBuild()
           }
         }
       }

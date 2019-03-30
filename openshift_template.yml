@@ -1,4 +1,5 @@
 
+
 kind: "BuildConfig"
 apiVersion: "v1"
 metadata:
@@ -6,8 +7,8 @@ metadata:
 spec:
     source:
       git:
-        ref: ${SOURCE_REPOSITORY_REF}
-        uri: ${SOURCE_REPOSITORY_URL}
+        ref: develop
+        uri: https://github.com/GeraudWilling/smashing-poc.git
       type: Git
     strategy:
       jenkinsPipelineStrategy:
