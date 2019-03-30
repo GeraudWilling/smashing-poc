@@ -1,37 +1,89 @@
-// define Logrotation and scm Polling
-properties(
-    [
-        [
-            $class: 'BuildDiscarderProperty',
-            strategy: [$class: 'LogRotator', numToKeepStr: '10']
-        ],
-        pipelineTriggers([cron('H/5 * * * *')]),
-    ]
-)
+pipeline {
+/*   agent {
+      label 'maven'
+  } */
+  agent any
 
-try{
-    node() {
+  environment {
+        NAME = 'smashing'
+  }
 
-        stage('Checkout'){
-            checkout scm
-        }
-        // run test in Jenkins Slave
-        stage('buildAndTest'){
-             //sh "npm build"
-        }
 
-        // trigger Build on OpenShift
-        stage('buildOnOpenShift'){
-             openshiftBuild(buildConfig: ${NAME}, showBuildLogs: 'true')
+  stages {
+    stage('Create Image Build Config') {
+      when {
+        expression {
+          openshift.withCluster() {
+            return !openshift.selector("bc", "${NAME}").exists();
+          }
         }
-
-        stage('deploy') {
-            openshiftDeploy(deploymentConfig: ${NAME})
+      }
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.newBuild("--name=${NAME}", "openshift/ruby-20-centos7:latest~https://github.com/GeraudWilling/smashing-poc.git#develop")
+          }
         }
+      }
     }
-} catch (Exception e) {
-    // Notify
-    echo "send error mail to ..."
-    mail subject: "Build failed with ${e.message}", to: "geraudwilling@hotmail.fr", body: "Job failed: ${env.BUILD_URL} \n\n${e.stackTrace}"
-    throw e;
+    stage('Build Image from Build Config') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.selector("bc", "${NAME}").startBuild()
+          }
+        }
+      }
+    }
+    stage('Promote to DEV') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.tag("${NAME}:latest", "${NAME}:dev")
+          }
+        }
+      }
+    }
+    stage('Create DEV') {
+      when {
+        expression {
+          openshift.withCluster() {
+            return !openshift.selector('dc', '${NAME}-dev').exists()
+          }
+        }
+      }
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.newApp("${NAME}:latest", "--name=${NAME}-dev").narrow('svc').expose()
+          }
+        }
+      }
+    }
+    stage('Promote STAGE') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.tag("${NAME}:dev", "${NAME}:stage")
+          }
+        }
+      }
+    }
+    stage('Create STAGE') {
+      when {
+        expression {
+          openshift.withCluster() {
+            return !openshift.selector('dc', '${NAME}-stage').exists()
+          }
+        }
+      }
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.newApp("${NAME}:stage", "--name=${NAME}-stage").narrow('svc').expose()
+          }
+        }
+      }
+    }
+  }
 }
