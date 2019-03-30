@@ -21,7 +21,7 @@ pipeline {
       steps {
         script {
           openshift.withCluster() {
-            openshift.newBuild("--name=${NAME}", "openshift/ruby-20-centos7:latest~https://github.com/GeraudWilling/smashing-poc.git#develop")
+            openshift.newBuild("--name=${NAME}", "centos/ruby-25-centos7:latest~https://github.com/GeraudWilling/smashing-poc.git#develop")
           }
         }
       }
@@ -30,7 +30,7 @@ pipeline {
       steps {
         script {
           openshift.withCluster() {
-            openshift.selector("bc", "${NAME}").startBuild()
+            openshift.selector("bc", "${NAME}").startBuild("--wait")
           }
         }
       }
