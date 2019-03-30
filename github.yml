@@ -1,0 +1,8 @@
+repos: 
+  - GeraudWilling/smashing-poc
+  - GeraudWilling/OpenshiftTest
+  - GeraudWilling/spring-boot
+  - GeraudWilling/spring-bootSpringHibernateMavenSample
+
+login: GeraudWilling
+password: <%= ENV['GITHUB_PASSWORD'] %>

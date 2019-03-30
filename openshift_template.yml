@@ -14,3 +14,14 @@ spec:
       jenkinsPipelineStrategy:
         jenkinsfilePath: jenkinsfile
       type: JenkinsPipeline
+    triggers:
+    - github:
+        secretReference:
+          name: "smashinggithubsecret"
+      type: GitHub
+    env:
+      - name: GITHUB_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            key: SECRET_TOKEN
+            name: secret-token-for-github-pull
