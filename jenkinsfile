@@ -80,7 +80,7 @@ pipeline {
           openshift.withCluster() {
             openshift.withProject() {
               def svc_name= ${NAME} + '-dev';
-              def connected = openshift.verifyService(${svc_name})
+              def connected = openshift.verifyService(svc_name)
                 if (!connected) {
                   echo "Unable to connect to ${NAME}-dev"
                   currentBuild.result = 'ABORTED'
