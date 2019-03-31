@@ -10,6 +10,17 @@ pipeline {
 
 
   stages {
+    stage('Create Unit test') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject() {
+              echo "Unit tests in ${openshift.project()}"
+            }
+          }
+        }
+      }
+    }
     stage('Create Image Build Config') {
       when {
         expression {
@@ -59,6 +70,17 @@ pipeline {
         script {
           openshift.withCluster() {
             openshift.newApp("${NAME}:latest", "--name=${NAME}-dev").narrow('svc').expose()
+          }
+        }
+      }
+    }
+     stage('Pre prod tests') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject() {
+              echo "Pre prods tests in ${openshift.project()}"
+            }
           }
         }
       }
