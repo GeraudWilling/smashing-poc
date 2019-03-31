@@ -10,7 +10,7 @@ pipeline {
 
 
   stages {
-    stage('Create Unit test') {
+    stage('Run Unit test') {
       steps {
         script {
           openshift.withCluster() {
@@ -74,7 +74,7 @@ pipeline {
         }
       }
     }
-     stage('Pre prod tests') {
+     stage('Run Pre prod tests') {
       steps {
         script {
           openshift.withCluster() {
