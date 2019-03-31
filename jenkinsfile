@@ -111,10 +111,9 @@ pipeline {
         );
         input message: "Promote to STAGE?", ok: "Promote"
       }
-        script {
-          openshift.withCluster() {
-            openshift.tag("${NAME}:dev", "${NAME}:stage")
-          }
+      script {
+        openshift.withCluster() {
+          openshift.tag("${NAME}:dev", "${NAME}:stage")
         }
       }
     }
