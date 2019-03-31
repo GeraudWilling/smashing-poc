@@ -81,7 +81,7 @@ pipeline {
             openshift.withProject() {
               def dc = openshift.selector('dc', "${Name}-dev")
               // this will wait until the desired replicas are available
-              dc.rollout().status()
+              //dc.rollout().status()
             }
           }
         }
