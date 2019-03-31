@@ -74,7 +74,23 @@ pipeline {
         }
       }
     }
-    stage('Run prod tests') {
+    stage('Validate DEV creation') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject() {
+              def connected = openshift.verifyService('${NAME}-dev')
+                if (!connected) {
+                  echo "Unable to connect to ${NAME}-dev"
+                  currentBuild.result = 'ABORTED'
+                  error('Stopping early…')
+                }
+            }
+          }
+        }
+      }
+    }
+    stage('Run pre prod tests') {
       steps {
         script {
           openshift.withCluster() {
@@ -87,6 +103,14 @@ pipeline {
     }
     stage('Promote STAGE') {
       steps {
+        // Might want Jenkins to ask someone before we do this ;-)
+        mail (
+            to: 'geraudwllg@gmail.com',
+            subject: "Deployment of ${openshift.project()} (${env.BUILD_NUMBER}) is awaiting promotion",
+             body: "Please go to ${env.BUILD_URL}."
+        );
+        input message: "Promote to STAGE?", ok: "Promote"
+      }
         script {
           openshift.withCluster() {
             openshift.tag("${NAME}:dev", "${NAME}:stage")
@@ -104,20 +128,20 @@ pipeline {
           }
         }
       }
-      // when {
-      //   expression {
-      //     openshift.withCluster() {
-      //       return !openshift.selector('dc', '${NAME}-stage').exists()
-      //     }
-      //   }
-      // }
-      // steps {
-      //   script {
-      //     openshift.withCluster() {
-      //       openshift.newApp("${NAME}:stage", "--name=${NAME}-stage").narrow('svc').expose()
-      //     }
-      //   }
-      // }
+      when {
+        expression {
+          openshift.withCluster() {
+            return !openshift.selector('dc', '${NAME}-stage').exists()
+          }
+        }
+      }
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.newApp("${NAME}:stage", "--name=${NAME}-stage").narrow('svc').expose()
+          }
+        }
+      }
     }
   }
 }
