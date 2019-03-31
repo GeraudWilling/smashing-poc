@@ -110,8 +110,6 @@ pipeline {
              body: "Please go to ${env.BUILD_URL}."
         );
         input message: "Promote to STAGE?", ok: "Promote"
-      }
-      steps {
         script {
           openshift.withCluster() {
             openshift.tag("${NAME}:dev", "${NAME}:stage")
