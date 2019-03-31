@@ -74,7 +74,7 @@ pipeline {
         }
       }
     }
-     stage('Run Pre prod tests') {
+    stage('Run prod tests') {
       steps {
         script {
           openshift.withCluster() {
@@ -95,20 +95,29 @@ pipeline {
       }
     }
     stage('Create STAGE') {
-      when {
-        expression {
-          openshift.withCluster() {
-            return !openshift.selector('dc', '${NAME}-stage').exists()
-          }
-        }
-      }
       steps {
         script {
           openshift.withCluster() {
-            openshift.newApp("${NAME}:stage", "--name=${NAME}-stage").narrow('svc').expose()
+            openshift.withProject() {
+              echo "Creating stage in ${openshift.project()}"
+            }
           }
         }
       }
+      // when {
+      //   expression {
+      //     openshift.withCluster() {
+      //       return !openshift.selector('dc', '${NAME}-stage').exists()
+      //     }
+      //   }
+      // }
+      // steps {
+      //   script {
+      //     openshift.withCluster() {
+      //       openshift.newApp("${NAME}:stage", "--name=${NAME}-stage").narrow('svc').expose()
+      //     }
+      //   }
+      // }
     }
   }
 }
