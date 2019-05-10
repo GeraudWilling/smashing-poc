@@ -1,0 +1,134 @@
+pipeline {
+/*   agent {
+      label 'maven'
+  } */
+  agent any
+
+  environment {
+        NAME = 'smashing'
+  }
+
+
+  stages {
+    stage('Run Unit test') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject() {
+              echo "Unit tests in ${openshift.project()}"
+            }
+          }
+        }
+      }
+    }
+    stage('Create Image Build Config') {
+      when {
+        expression {
+          openshift.withCluster() {
+            return !openshift.selector("bc", "${NAME}").exists();
+          }
+        }
+      }
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.newBuild("--name=${NAME}", "centos/ruby-25-centos7:latest~https://github.com/GeraudWilling/smashing-poc.git#develop")
+          }
+        }
+      }
+    }
+    stage('Build Image from Build Config') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.verbose(true) // Turn it back
+            // If you want verbose output, but want a specific log-level
+            openshift.logLevel(3)
+            openshift.selector("bc", "${NAME}").startBuild()
+          }
+        }
+      }
+    }
+    stage('Promote to DEV') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.tag("${NAME}:latest", "${NAME}:dev")
+          }
+        }
+      }
+    }
+    stage('Create DEV') {
+      when {
+        expression {
+          openshift.withCluster() {
+            return !openshift.selector('dc', '${NAME}-dev').exists()
+          }
+        }
+      }
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.newApp("${NAME}:latest", "--name=${NAME}-dev").narrow('svc').expose()
+          }
+        }
+      }
+    }
+    stage('Validate DEV creation') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject() {
+              def dc = openshift.selector('dc', "${Name}-dev")
+              // this will wait until the desired replicas are available
+              //dc.rollout().status()
+            }
+          }
+        }
+      }
+    }
+    stage('Run pre prod tests') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject() {
+              echo "Pre prods tests in ${openshift.project()}"
+            }
+          }
+        }
+      }
+    }
+    stage('Promote STAGE') {
+      steps {
+        // Might want Jenkins to ask someone before we do this ;-)
+        // mail (
+        //     to: 'geraudwllg@gmail.com',
+        //     subject: "Deployment of ${openshift.project()} (${env.BUILD_NUMBER}) is awaiting promotion",
+        //      body: "Please go to ${env.BUILD_URL}."
+        // );
+        input message: "Promote to STAGE?", ok: "Promote"
+        script {
+          openshift.withCluster() {
+            openshift.tag("${NAME}:dev", "${NAME}:stage")
+          }
+        }
+      }
+    }
+    stage('Create STAGE') {
+      when {
+        expression {
+          openshift.withCluster() {
+            return !openshift.selector('dc', '${NAME}-stage').exists()
+          }
+        }
+      }
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.newApp("${NAME}:stage", "--name=${NAME}-stage").narrow('svc').expose()
+          }
+        }
+      }
+    }
+  }
+}

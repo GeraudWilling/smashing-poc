@@ -1,0 +1,27 @@
+
+
+kind: "BuildConfig"
+apiVersion: "v1"
+metadata:
+  name: "smashing-pipeline"
+spec:
+    source:
+      git:
+        ref: develop
+        uri: https://github.com/GeraudWilling/smashing-poc.git
+      type: Git
+    strategy:
+      jenkinsPipelineStrategy:
+        jenkinsfilePath: jenkinsfile
+      type: JenkinsPipeline
+    triggers:
+    - github:
+        secretReference:
+          name: "smashinggithubsecret"
+      type: GitHub
+    env:
+      - name: GITHUB_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            key: SECRET_TOKEN
+            name: secret-token-for-github-pull
